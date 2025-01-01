@@ -43,8 +43,8 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/register',
-    component: () => import('@/views/register'),
+    path:'/overview',
+    component: () => import('@/views/main/overview/index.vue'),
     hidden: true
   },
   {

@@ -11,7 +11,7 @@ import usePermissionStore from '@/store/modules/permission'
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/register']
+const whiteList = ['/login']
 
 const isWhiteList = (path) => {
   return whiteList.some(pattern => isPathMatch(pattern, path))
@@ -22,26 +22,28 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     to.meta.title && useSettingsStore().setTitle(to.meta.title)
     /* has token*/
-    if (to.path === '/login') {
+    if (to.path === '/login') { //已经登录禁止访问首页
       next({ path: '/' })
       NProgress.done()
     } else if (isWhiteList(to.path)) {
       next()
     } else {
       if (useUserStore().roles.length === 0) {
+        //! 这玩意的含义是什么?
         isRelogin.show = true
         // 判断当前用户是否已拉取完user_info信息
         useUserStore().getInfo().then(() => {
           isRelogin.show = false
-          usePermissionStore().generateRoutes().then(accessRoutes => {
+         /*  usePermissionStore().generateRoutes().then(accessRoutes => {
             // 根据roles权限生成可访问的路由表
             accessRoutes.forEach(route => {
               if (!isHttp(route.path)) {
                 router.addRoute(route) // 动态添加可访问路由表
               }
             })
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
-          })
+           
+          }) */
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         }).catch(err => {
           useUserStore().logOut().then(() => {
             ElMessage.error(err)

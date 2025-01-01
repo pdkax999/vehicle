@@ -23,7 +23,10 @@ const useUserStore = defineStore(
         const uuid = userInfo.uuid
         return new Promise((resolve, reject) => {
           login(username, password, code, uuid).then(res => {
-            setToken(res.token)
+            // 保存资源token
+            console.log('token:', res.data.access_token);
+            
+            setToken(res.data.access_token)
             this.token = res.token
             resolve()
           }).catch(error => {
@@ -38,6 +41,7 @@ const useUserStore = defineStore(
             const user = res.user
             let avatar = user.avatar || ""
             if (!isHttp(avatar)) {
+              // 非HTTP代理转发获取头像
               avatar = (isEmpty(avatar)) ? defAva : import.meta.env.VITE_APP_BASE_API + avatar
             }
             if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
